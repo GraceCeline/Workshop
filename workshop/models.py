@@ -7,8 +7,8 @@ class Workshop(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     further_info_link = models.URLField(blank=True, null=True)
-    tool = models.ManyToManyField('Tool')
-    prerequisite = models.ManyToManyField('Prerequisite')
+    tool = models.ManyToManyField('Tool',blank=True)
+    prerequisite = models.ManyToManyField('Prerequisite',blank=True)
     PRESENCE = [
         ('onsite', 'Onsite'),
         ('hybrid', 'Hybrid'),
@@ -24,14 +24,12 @@ class Workshop(models.Model):
         return self.workshop_title
 
 class Tool(models.Model):
-    # workshop = models.ManyToManyField(Workshop)
     tool = models.CharField(max_length=300)
 
     def __str__(self):
         return self.tool
 
 class Prerequisite(models.Model):
-    # workshop = models.ManyToManyField(Workshop)
     prerequisite = models.CharField(max_length=300)
 
     def __str__(self):
