@@ -1,20 +1,17 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Workshop, Tool, Prerequisite
+from .models import Workshop, Tool
 
 class WorkshopForm(forms.ModelForm): 
     tool = forms.ModelMultipleChoiceField(
         queryset=Tool.objects.all(),
         widget=forms.CheckboxSelectMultiple
     )
-    prerequisite = forms.ModelMultipleChoiceField(
-        queryset=Prerequisite.objects.all(),
-        widget=forms.CheckboxSelectMultiple
-    ) 
+    start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
+    end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
     class Meta:
         model = Workshop
         fields = "__all__"
-
 """
 class ToolForm(forms.ModelForm):
     class Meta:

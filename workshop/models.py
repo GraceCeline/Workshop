@@ -8,7 +8,7 @@ class Workshop(models.Model):
     end_time = models.TimeField()
     further_info_link = models.URLField(blank=True, null=True)
     tool = models.ManyToManyField('Tool',blank=True)
-    prerequisite = models.ManyToManyField('Prerequisite',blank=True)
+    prerequisite = models.TextField(blank=True)
     PRESENCE = [
         ('onsite', 'Onsite'),
         ('hybrid', 'Hybrid'),
@@ -17,7 +17,7 @@ class Workshop(models.Model):
     type_of_presence = models.CharField(max_length=10, choices=PRESENCE)
     location = models.CharField(max_length=250)
     host = models.CharField(max_length=300, null=True)
-    registration_link = models.URLField()
+    registration_link = models.URLField(blank=True, null=True)
     max_participants = models.IntegerField()
 
     def __str__(self):
@@ -28,12 +28,5 @@ class Tool(models.Model):
 
     def __str__(self):
         return self.tool
-
-class Prerequisite(models.Model):
-    prerequisite = models.CharField(max_length=300)
-
-    def __str__(self):
-        return self.prerequisite
-
 
 # Create your models here.
