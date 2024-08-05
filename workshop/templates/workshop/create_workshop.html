@@ -1,10 +1,18 @@
 {% load static %}
+{% load bootstrap %}
 <link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
-<html>
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
-</form>
+<html lang="en">
+<legend>Create your Workshop</legend>
+<div class="form-group col-sm-8">
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="py-2">
+            {{ form|bootstrap }}
+        </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    </form>
+</div>
 </html>
 
