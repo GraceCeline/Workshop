@@ -1,0 +1,29 @@
+{% load static %}
+<html lang="en">
+<head>
+    <title>Workshop Detail</title>
+</head>
+<body>
+    <div class="text-center mb-5" style="padding-top: 50px; padding-bottom: 20px;">
+        <fieldset style="line-height: 1.5;">
+            <h1>{{ workshop.workshop_title }}</h1>
+            <p>{{ workshop.description }}</p>
+            <p>Date: {{ workshop.date }}</p>
+            <p>Start Time: {{ workshop.start_time }}</p>
+            <p>End Time: {{ workshop.end_time }}</p>
+            <h2>Tools</h2>
+            <ul>
+                {% for tool in workshop.tools.all %}
+                    <li>{{ tool.tool }}</li>
+                {% endfor %}
+            </ul>
+            <p>{{ workshop.prerequisite }}</p>
+            <p>Location: {{ workshop.location }}</p>
+            <p>Host: {{ workshop.host }}</p>
+            <p>Type of Presence: {{ workshop.get_type_of_presence_display }}</p>
+            <p>Max Participants: {{ workshop.max_participants }}</p>
+            <p>Further Info: <a href="{{ workshop.further_info_link }}">{{ workshop.further_info_link }}</a></p>
+            <p>Registration Link: <a href="{{ workshop.registration_link }}">{{ workshop.registration_link }}</a></p>
+            
+        </fieldset>
+    </div>

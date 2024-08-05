@@ -1,0 +1,19 @@
+.btn {
+    padding-left: 20px;
+}
+
+ul {
+    list-style-type: none;
+}
+table {
+    text-align:center;
+}
+
+a {
+    color: #093741;
+    text-decoration: none;
+}
+
+h1{
+    padding-top: 20px;
+}

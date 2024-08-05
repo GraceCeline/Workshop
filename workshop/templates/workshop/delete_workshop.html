@@ -1,0 +1,12 @@
+<head>
+    <title>Confirm Delete</title>
+</head>
+<body>
+    <h1>Are you sure you want to delete "{{ workshop.workshop_title }}"?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, delete</button>
+        <a href="{% url 'workshop:list' %}">Cancel</a>  <!-- Adjust the URL to your workshop list view -->
+    </form>
+</body>
+</html>

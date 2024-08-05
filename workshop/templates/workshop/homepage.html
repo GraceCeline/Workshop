@@ -10,26 +10,32 @@
     <a href="{% url 'admin:index' %}" text-decoration: none;>Are you an admin? Go to the admin site!</a>
 </div>
 
-<form action="" method="GET">
-    <div class="text-center mb-2">
-        <input type="search" name="search" placeholder="Search" size="40">
-        <button type="submit">Submit<i class="fas fa-search"></i></button>
-    </div>
-</form>
+<div class="text-center mb-2">
+    <form action="" method="GET">
+        <div class="text-center mb-2">
+            <input type="search" name="search" placeholder="Search" size="40">
+            <button type="submit">Submit<i class="fas fa-search"></i></button>
+            <a href="{% url 'workshop:create_workshop' %}" class="btn btn-secondary btn-lg" role="button" >Create</a>
+        </div>
+    </form>
+    
+</div>
 
 <div class="workshops">
-    <table class="table table-bordered mx-auto" style="width: 30%;">
+    <table class="table table-borderless mx-auto" style="width: 30%;">
         <thead>
             <th scope="col">Workshop</th>
+            <th scope="col">Date</th>
+            <th scope="col">Edit Workshop</th>
+            <th scope="col">Delete Workshop</th>
         </thead>
         <tbody>
         {% for workshop in workshop_list %}
             <tr>
-                <td>
-                    <ul style="text-align: center;">
-                        <li>{{ workshop.workshop_title }}</li>
-                    </ul>
-                </td>
+                <th scope="row"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></th>
+                <td>{{ workshop.date }}</td>
+                <td><button type="button" class="btn btn-warning"><a href="{% url 'workshop:edit_workshop' workshop.id %}">Edit</a></button></td>
+                <td><button type="button" class="btn btn-danger"><a href="{% url 'workshop:delete_workshop' workshop.id %}">Delete</a></button></td>
             </tr>
         {% endfor %}
         </tbody>
