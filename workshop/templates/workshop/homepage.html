@@ -13,16 +13,18 @@
     </div>
 
     <div class="justify-content-center d-flex mb-2">
-        <form action="" method="GET">  
-            <input type="search" name="search" placeholder="Search" size="40">
-            <button type="submit">Submit<i class="fas fa-search"></i></button>
+        <form action="" method="GET" class="d-flex">  
+            <!-- Input field for search -->
+            <input type="search" class="form-control rounded me-0" aria-label="Search" aria-describedby="search-addon" name="search" placeholder="Search" size="40">
+            <!-- Search button -->
+            <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-init>Search</button>
         </form>
-        
     </div>
+    
 
     <div class="workshops">
         <table class="table table-borderless mx-auto my-2" style="width: 50%;">
-            <thead>
+            <thead class="mb-4">
                 <th scope="col">Workshop</th>
                 <th scope="col">Date</th>
                 <th scope="col">Edit Workshop</th>
@@ -31,10 +33,10 @@
             <tbody>
             {% for workshop in workshop_list %}
                 <tr>
-                    <th scope="row"><a href="{% url 'workshop:details' workshop.workshop_title %}">{{ workshop.workshop_title }}</a></th>
+                    <th scope="row"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></th>
                     <td>{{ workshop.date }}</td>
-                    <td><a href="{% url 'workshop:edit_workshop' workshop.workshop_title %}" class="btn btn-warning" role="button">Edit</a></td>
-                    <td><a href="{% url 'workshop:delete_workshop' workshop.workshop_title %}" class="btn btn-danger" role="button">Delete</a></td>
+                    <td><a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a></td>
+                    <td><a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a></td>
                 </tr>
             {% endfor %}
             </tbody>

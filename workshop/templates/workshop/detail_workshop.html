@@ -1,11 +1,14 @@
 {% load static %}
+{% load bootstrap %}
+<link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'workshop/style.css' %}">
+
 <html lang="en">
 <head>
-    <title>Workshop Detail</title>
+    <title>Workshop {{ workshop.workshop_title }} Detail</title>
 </head>
 <body>
     <div class="text-center mb-5" style="padding-top: 50px; padding-bottom: 20px;">
-        <fieldset style="line-height: 1.5;">
             <h1>{{ workshop.workshop_title }}</h1>
             <p>{{ workshop.description }}</p>
             <p>Date: {{ workshop.date }}</p>
@@ -24,6 +27,4 @@
             <p>Max Participants: {{ workshop.max_participants }}</p>
             <p>Further Info: <a href="{{ workshop.further_info_link }}">{{ workshop.further_info_link }}</a></p>
             <p>Registration Link: <a href="{{ workshop.registration_link }}">{{ workshop.registration_link }}</a></p>
-            
-        </fieldset>
     </div>

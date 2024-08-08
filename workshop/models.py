@@ -1,7 +1,7 @@
 from django.db import models
 
 class Workshop(models.Model):
-    workshop_title = models.CharField(max_length=500, primary_key=True, unique=True)
+    workshop_title = models.CharField(max_length=500, unique=True)
     description = models.TextField()
     date = models.DateField()
     start_time = models.TimeField()
