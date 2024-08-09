@@ -12,8 +12,8 @@ class ListWorkshop(generic.ListView):
 
     def get_queryset(self):
         logging.info("Get Data")
-        query = self.request.GET.get('')
-        return Workshop.objects.all().order_by("date")
+        query = self.request.GET.get('search', '')
+        return Workshop.objects.filter(workshop_title__icontains=query).order_by("workshop_title")
 
 class DetailWorkshop(generic.detail.DetailView):
     model = Workshop
