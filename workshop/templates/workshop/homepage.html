@@ -13,15 +13,32 @@
     </div>
 
     <div class="justify-content-center d-flex mb-2">
-        <form action="#" method="GET" class="d-flex">  
-            <input type="search" class="form-control rounded me-0" aria-label="Search" aria-describedby="search-addon"  placeholder="Search" size="40">
-            <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Search</button>
+        <form action="" method="GET" class="d-flex">  
+            <input type="search" name="search" class="form-control rounded me-0" aria-label="Search" aria-describedby="search-addon"  placeholder="Search.." size="40">
+            <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Search<i class="fas fa-search"></i></button>
         </form>
     </div>
     
 
     <div class="workshops">
-        <table class="table table-borderless mx-auto my-2" style="width: 50%; z-index: 1;">
+        <div class="row justify-content-space-around">
+        {% for workshop in workshop_list %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></h5>
+                        <p class="card-text">{{ workshop.description }}</p>
+                        <a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a>
+                        <a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+            {% if forloop.counter|divisibleby:3 and not forloop.last %}
+                </div><div class="row justify-content-start">
+            {% endif %}
+        {% endfor %}
+        <!-- <table class="table table-borderless mx-auto my-2" style="width: 50%; z-index: 1;"
             <thead class="mb-4">
                 <th scope="col">Workshop</th>
                 <th scope="col">Date</th>
@@ -38,7 +55,8 @@
                 </tr>
             {% endfor %}
             </tbody>
-        </table>
+        </table>> -->
+    </div>
     </div>
 </body>
 </html>

@@ -9,6 +9,7 @@ class WorkshopModelTests(TestCase):
         self.assertTrue(workshop.date > timezone.now().date(), "Workshop date should be in the future.")
 
 class WorkshopIndexViewTests(TestCase):
+    def test_no_workshop(self):
         response = self.client.get(reverse("workshop:list"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No workshops are available.")
