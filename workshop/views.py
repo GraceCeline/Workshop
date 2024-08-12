@@ -40,7 +40,7 @@ class EditWorkshop(generic.edit.UpdateView):
 
     def form_valid(self, form):
         form.save()
-        return HttpResponseRedirect("/saved/")
+        return HttpResponseRedirect(reverse('workshop:list'))
     
     def get_queryset(self):
         return Workshop.objects.all()
