@@ -14,7 +14,7 @@
             <p>End Time: {{ workshop.end_time }}</p>
             <h2>Tools</h2>
             <ul>
-                {% for tool in workshop.tools.all %}
+                {% for tool in workshop.tool.all %}
                     <li>{{ tool.tool }}</li>
                 {% endfor %}
             </ul>

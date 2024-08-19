@@ -1,3 +1,5 @@
+from django.db.models import Q
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render, redirect,reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
@@ -9,11 +11,18 @@ import logging
 class ListWorkshop(generic.ListView):
     template_name = "workshop/homepage.html"
     context_object_name = "workshop_list"
+    paginate_by = 12
 
     def get_queryset(self):
         logging.info("Get Data")
         query = self.request.GET.get('search', '')
-        return Workshop.objects.filter(workshop_title__icontains=query).order_by("workshop_title")
+        if query:
+            return Workshop.objects.filter(
+                Q(workshop_title__icontains=query) |
+                Q(description__icontains=query) |
+                Q(location__icontains=query)).order_by("workshop_title")
+        else:
+            return Workshop.objects.all().order_by("workshop_title")
 
 class DetailWorkshop(generic.detail.DetailView):
     model = Workshop

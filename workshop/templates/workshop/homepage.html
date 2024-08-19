@@ -23,40 +23,46 @@
     <div class="workshops">
         <div class="row justify-content-space-around">
         {% for workshop in workshop_list %}
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></h5>
-                        <p class="card-text">{{ workshop.description }}</p>
-                        <a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a>
-                        <a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a>
+            {% if not workshop.past_workshop %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></h5>
+                            <p class="card-text">{{ workshop.description }}</p>
+                            <a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a>
+                            <a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
 
             {% if forloop.counter|divisibleby:3 and not forloop.last %}
                 </div><div class="row justify-content-start">
             {% endif %}
         {% endfor %}
-        <!-- <table class="table table-borderless mx-auto my-2" style="width: 50%; z-index: 1;"
-            <thead class="mb-4">
-                <th scope="col">Workshop</th>
-                <th scope="col">Date</th>
-                <th scope="col">Edit Workshop</th>
-                <th scope="col">Delete Workshop</th>
-            </thead>
-            <tbody>
-            {% for workshop in workshop_list %}
-                <tr>
-                    <th scope="row"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></th>
-                    <td>{{ workshop.date }}</td>
-                    <td><a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a></td>
-                    <td><a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>> -->
     </div>
+    <h3>Past Workshop</h3>
+    <div class="row ">
+        {% for workshop in workshop_list %}
+            {% if workshop.past_workshop %}
+                <div class="col-md-4">
+                    <div class="card bg-secondary-subtle mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></h5>
+                            <p class="card-text">{{ workshop.description }}</p>
+                            <a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a>
+                            <a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if forloop.counter|divisibleby:3 and not forloop.last %}
+                </div><div class="row justify-content-start">
+            {% endif %}
+        {% endfor %}
+         </div>
+        
     </div>
 </body>
 </html>
