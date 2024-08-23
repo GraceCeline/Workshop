@@ -9,10 +9,7 @@ class Tool(models.Model):
     def __str__(self):
         return self.tool
 class Workshop(models.Model):
-    VISIBILITY = [
-        ('public', 'Public'),
-        ('private', 'Private')
-    ]
+    
     workshop_title = models.CharField(max_length=500, unique=True)
     description = models.TextField()
     date = models.DateField()
@@ -32,6 +29,7 @@ class Workshop(models.Model):
     registration_link = models.URLField(blank=True, null=True)
     registration_deadline = models.DateField()
     max_participants = models.IntegerField()
+    is_private = models.BooleanField(default=True)
 
     def __str__(self):
         return self.workshop_title

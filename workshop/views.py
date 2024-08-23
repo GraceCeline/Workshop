@@ -1,14 +1,41 @@
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render, redirect,reverse
+from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
 from .models import Tool, Workshop
-from .forms import WorkshopForm
+from .forms import WorkshopForm, RegistrationForm
 import logging
 
-class ListWorkshop(generic.ListView):
+class MyLoginView(LoginView):
+    redirect_authenticated_user = False
+
+    def get_success_url(self):
+        return reverse_lazy('workshop:list')
+    
+    def form_invalid(self, form):
+        messages.error(self.request,'Invalid username or password')
+        return self.render_to_response(self.get_context_data(form=form))
+
+def sign_up(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('/success')
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'registration/sign_up.html', {"form": form})
+
+class ListWorkshop(LoginRequiredMixin, generic.ListView):
     template_name = "workshop/homepage.html"
     context_object_name = "workshop_list"
     paginate_by = 12
@@ -32,6 +59,7 @@ class DetailWorkshop(generic.detail.DetailView):
         context = super().get_context_data(**kwargs)
         context['workshop_id'] = self.kwargs.get('pk')
         return context
+
 
 class CreateWorkshop(generic.edit.CreateView):
     form_class = WorkshopForm
