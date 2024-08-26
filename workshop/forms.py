@@ -7,7 +7,7 @@ from .models import Workshop, Tool
 from django.forms.widgets import DateInput, TimeInput
 
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField()
+    email = forms.EmailField(required=False)
 
     class Meta:
         model = User

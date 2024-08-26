@@ -1,4 +1,4 @@
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -17,11 +17,25 @@ class MyLoginView(LoginView):
     redirect_authenticated_user = False
 
     def get_success_url(self):
-        return reverse_lazy('workshop:list')
+        return reverse_lazy('login_redirect')
     
     def form_invalid(self, form):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
+
+class LoginRedirectView(generic.TemplateView):
+    template_name = 'registration/login_redirect.html'
+
+class LogoutRedirectView(generic.TemplateView):
+    template_name = 'registration/logout.html'
+
+class MyLogoutView(LogoutView):
+    next_page = reverse_lazy('logout_redirect')
+    """make logout available via GET"""
+    http_method_names = ["get", "post", "options"]
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 def sign_up(request):
     if request.method == 'POST':
@@ -35,21 +49,24 @@ def sign_up(request):
 
     return render(request, 'registration/sign_up.html', {"form": form})
 
-class ListWorkshop(LoginRequiredMixin, generic.ListView):
+class ListWorkshop(generic.ListView):
     template_name = "workshop/homepage.html"
     context_object_name = "workshop_list"
-    paginate_by = 12
 
     def get_queryset(self):
         logging.info("Get Data")
         query = self.request.GET.get('search', '')
+        queryset = Workshop.objects.all().order_by("workshop_title")
         if query:
-            return Workshop.objects.filter(
+            queryset = queryset.filter(
                 Q(workshop_title__icontains=query) |
                 Q(description__icontains=query) |
                 Q(location__icontains=query)).order_by("workshop_title")
-        else:
-            return Workshop.objects.all().order_by("workshop_title")
+
+        if not self.request.user.is_authenticated:
+            queryset = queryset.filter(is_private=False)
+
+        return queryset
 
 class DetailWorkshop(generic.detail.DetailView):
     model = Workshop

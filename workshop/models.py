@@ -8,6 +8,7 @@ class Tool(models.Model):
 
     def __str__(self):
         return self.tool
+        
 class Workshop(models.Model):
     
     workshop_title = models.CharField(max_length=500, unique=True)

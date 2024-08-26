@@ -16,12 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from workshop import views, urls
+from workshop import views
 
 urlpatterns = [
     # path('', include('django.contrib.auth.urls')),
     path('',views.MyLoginView.as_view(),name="login"),
+    path('login_redirect', views.LoginRedirectView.as_view(), name='login_redirect'),
     path('sign-up', views.sign_up, name="sign-up" ),
+    path('logout', views.MyLogoutView.as_view(), name="logout"),
+    path('logout_redirect',views.LogoutRedirectView.as_view(), name="logout_redirect"),
     path('admin/', admin.site.urls),
     path('workshop/', include("workshop.urls"))
 ]
