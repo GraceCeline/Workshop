@@ -1,7 +1,7 @@
 import datetime
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 class Tool(models.Model):
     tool = models.CharField(max_length=300)
@@ -31,6 +31,7 @@ class Workshop(models.Model):
     registration_deadline = models.DateField()
     max_participants = models.IntegerField()
     is_private = models.BooleanField(default=True)
+    workshop_admin = models.ForeignKey(User,on_delete=models.CASCADE, default=lambda: User.objects.filter(is_superuser=True).first())
 
     def __str__(self):
         return self.workshop_title

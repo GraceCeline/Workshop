@@ -1,11 +1,10 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render, redirect,reverse
-from django.contrib.auth import login, logout, authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
@@ -78,19 +77,21 @@ class DetailWorkshop(generic.detail.DetailView):
         return context
 
 
-class CreateWorkshop(generic.edit.CreateView):
+class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
     form_class = WorkshopForm
     template_name = "workshop/create_workshop.html"
+    permission_required = 'workshop.create_workshop'
 
     def form_valid(self, form):
         logging.info(f"Saving Form {form}")
         form.save()
         return HttpResponseRedirect(reverse('workshop:list'))
 
-class EditWorkshop(generic.edit.UpdateView):
+class EditWorkshop(PermissionRequiredMixin, generic.edit.UpdateView):
     form_class = WorkshopForm
     template_name = "workshop/edit_workshop.html"
     success_url = ""
+    permission_required = 'workshop.edit_workshop'
 
     def form_valid(self, form):
         form.save()
@@ -99,10 +100,11 @@ class EditWorkshop(generic.edit.UpdateView):
     def get_queryset(self):
         return Workshop.objects.all()
 
-class DeleteWorkshop(generic.edit.DeleteView):
+class DeleteWorkshop(PermissionRequiredMixin, generic.edit.DeleteView):
     model = Workshop
     template_name = 'workshop/delete_workshop.html'
     success_url= "/workshop/"
+    permission_required = 'workshop.delete_workshop'
 
     def get_queryset(self):
         return Workshop.objects.all()
