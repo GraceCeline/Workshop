@@ -31,7 +31,7 @@ class Workshop(models.Model):
     registration_deadline = models.DateField()
     max_participants = models.IntegerField()
     is_private = models.BooleanField(default=True)
-    workshop_admin = models.ForeignKey(User,on_delete=models.CASCADE, default=lambda: User.objects.filter(is_superuser=True).first())
+    workshop_admin = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.workshop_title
@@ -42,5 +42,12 @@ class Workshop(models.Model):
     def deadline_overdue(self):
         return self.registration_deadline < timezone.now().date()
 
+    """class Meta:
+        permissions = [
+            ('create_workshop', 'Create workshop'),
+            ('edit_workshop', 'Edit workshop'),
+            ('delete_workshop', 'Delete workshop'),
+        ]
+"""
 
 # Create your models here.

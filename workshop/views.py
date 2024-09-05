@@ -1,9 +1,11 @@
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render, redirect,reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
@@ -11,6 +13,13 @@ from django.views import generic
 from .models import Tool, Workshop
 from .forms import WorkshopForm, RegistrationForm
 import logging
+
+class UserIsWorkshopAdminMixin:
+    def dispatch(self, request, *args, **kwargs):
+        workshop = self.get_object()
+        if workshop.workshop_admin != request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 class MyLoginView(LoginView):
     redirect_authenticated_user = False
@@ -80,16 +89,17 @@ class DetailWorkshop(generic.detail.DetailView):
 class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
     form_class = WorkshopForm
     template_name = "workshop/create_workshop.html"
-    permission_required = 'workshop.create_workshop'
+    permission_required = 'workshop.add_workshop'
 
     def form_valid(self, form):
         logging.info(f"Saving Form {form}")
+        form.instance.workshop_admin = self.request.user.pk
         form.save()
         return HttpResponseRedirect(reverse('workshop:list'))
 
 class EditWorkshop(PermissionRequiredMixin, generic.edit.UpdateView):
     form_class = WorkshopForm
-    template_name = "workshop/edit_workshop.html"
+    template_name = "workshop/change_workshop.html"
     success_url = ""
     permission_required = 'workshop.edit_workshop'
 
