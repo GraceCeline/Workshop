@@ -11,12 +11,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
 from .models import Tool, Workshop
-from .forms import WorkshopForm, RegistrationForm
+from .forms import  ToolForm,WorkshopForm, RegistrationForm
 import logging
 
 class UserIsWorkshopAdminMixin:
     def dispatch(self, request, *args, **kwargs):
         workshop = self.get_object()
+
+        if request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
         if workshop.workshop_admin != request.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
@@ -93,15 +97,15 @@ class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
 
     def form_valid(self, form):
         logging.info(f"Saving Form {form}")
-        form.instance.workshop_admin = self.request.user.pk
+        form.instance.workshop_admin = self.request.user
         form.save()
         return HttpResponseRedirect(reverse('workshop:list'))
 
-class EditWorkshop(PermissionRequiredMixin, generic.edit.UpdateView):
+class EditWorkshop(UserIsWorkshopAdminMixin, generic.edit.UpdateView):
     form_class = WorkshopForm
-    template_name = "workshop/change_workshop.html"
+    template_name = "workshop/edit_workshop.html"
     success_url = ""
-    permission_required = 'workshop.edit_workshop'
+    # permission_required = 'workshop.change_workshop'
 
     def form_valid(self, form):
         form.save()
@@ -110,11 +114,11 @@ class EditWorkshop(PermissionRequiredMixin, generic.edit.UpdateView):
     def get_queryset(self):
         return Workshop.objects.all()
 
-class DeleteWorkshop(PermissionRequiredMixin, generic.edit.DeleteView):
+class DeleteWorkshop(UserIsWorkshopAdminMixin, generic.edit.DeleteView):
     model = Workshop
     template_name = 'workshop/delete_workshop.html'
     success_url= "/workshop/"
-    permission_required = 'workshop.delete_workshop'
+    # permission_required = 'workshop.delete_workshop'
 
     def get_queryset(self):
         return Workshop.objects.all()
@@ -122,38 +126,9 @@ class DeleteWorkshop(PermissionRequiredMixin, generic.edit.DeleteView):
     def delete():
         return super(DeleteWorkshop, self).delete()
     
-"""
-def create_workshop(request):
-    logging.info("Add Workshop Data")
+class CreateTool(UserIsWorkshopAdminMixin, generic.edit.CreateView):
+    form_class = ToolForm
+    template_name ="workshop/create_tool.html"
 
-    if request.method == 'POST':
-        form = WorkshopForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("/saved/")
-        else:
-            logging.info(f"Found errors: {form.errors}")
-            return HttpResponse(status=500)
-    else:
-        form = WorkshopForm()
-    return render(request, "workshop/create_workshop.html", {'form': form })
-
-def edit_workshop(request, workshop_id):
-    workshop = get_object_or_404(Workshop, pk=workshop_id)
-
-    if request.method == 'POST':
-        form = WorkshopForm(request.POST, instance=workshop)
-        if form.is_valid():
-            form.save()
-            messages.success(request,"Workshop edited successfully")
-        else:
-            logging.info(f"Found errors: {form.errors}")
-            return HttpResponse(status=500)
-    return render(request, "workshop/edit_workshop.html", { 'form' : form, 'workshop' : workshop})
-
-def delete_workshop(request, workshop_id):
-    workshop = get_object_or_404(Workshop, pk=workshop_id)
-    if request.method == 'POST' and 'delete' in request.POST:
-        Workshop.objects.filter(pk=workshop_id).delete()
-        return HttpResponseRedirect("workshop:homepage")
-"""
+    def form_valid(self):
+        return HttpResponseRedirect(reverse('workshop:list'))

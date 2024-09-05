@@ -32,18 +32,14 @@ class WorkshopForm(forms.ModelForm):
     )
     class Meta:
         model = Workshop
-        fields = "__all__"
+        exclude = ('workshop_admin',)
         widgets = {
             'date': DateInput(format='%d/%m/%Y'),
             'start_time' : TimeInput(format='%H:%M'),
             'end_time' : TimeInput(format='%H:%M'),
             'registration_deadline' : DateInput(),
         }
-
-"""
 class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
         fields = ['tool']
-
-"""
