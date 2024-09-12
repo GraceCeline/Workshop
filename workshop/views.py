@@ -106,7 +106,7 @@ class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
 
     def form_valid(self, form):
         logging.info(f"Saving Form {form}")
-        form.instance.workshop_admin = self.request.user
+        form.instance.tutor = self.request.user
 
         context = self.get_context_data()
         workshop_formset = context['workshop_formset']

@@ -30,6 +30,11 @@ class TimeslotForm(forms.ModelForm):
         model = Timeslot
         fields = ['topic', 'start_time', 'end_time']
 
+class ToolForm(forms.ModelForm):
+    class Meta:
+        model = Tool
+        fields = ['tool']
+        
 class WorkshopForm(forms.ModelForm): 
     tool = forms.ModelMultipleChoiceField(
         queryset=Tool.objects.all(),
@@ -47,7 +52,3 @@ class WorkshopForm(forms.ModelForm):
 
 WorkshopFormSet = inlineformset_factory(Workshop, Timeslot, form=WorkshopForm, extra=3)
 
-class ToolForm(forms.ModelForm):
-    class Meta:
-        model = Tool
-        fields = ['tool']
