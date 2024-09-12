@@ -4,14 +4,15 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
+from django.forms import inlineformset_factory
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render, redirect,reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
-from .models import Tool, Workshop
-from .forms import  ToolForm,WorkshopForm, RegistrationForm
+from .models import Tool, Workshop, Timeslot
+from .forms import  ToolForm,WorkshopForm, RegistrationForm, TimeslotForm, WorkshopFormSet
 import logging
 
 class UserIsWorkshopAdminMixin:
@@ -95,11 +96,30 @@ class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
     template_name = "workshop/create_workshop.html"
     permission_required = 'workshop.add_workshop'
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['workshop_formset'] = WorkshopFormSetFormSet(self.request.POST)
+        else:
+            data['workshop_formset'] = WorkshopFormSet()
+        return data
+
     def form_valid(self, form):
         logging.info(f"Saving Form {form}")
         form.instance.workshop_admin = self.request.user
-        form.save()
-        return HttpResponseRedirect(reverse('workshop:list'))
+
+        context = self.get_context_data()
+        workshop_formset = context['workshop_formset']
+        if workshop_formset.is_valid():
+            self.object = form.save()
+            timeslots = workshop_formset.save(commit=False)
+            for timeslot in timeslots:
+                timeslot.workshop = self.object
+                timeslot.save()
+            return HttpResponseRedirect(reverse('workshop:list'))
+        else:
+            return self.form_invalid(form)
+        # return HttpResponseRedirect(reverse('workshop:list'))
 
 class EditWorkshop(UserIsWorkshopAdminMixin, generic.edit.UpdateView):
     form_class = WorkshopForm
@@ -107,9 +127,26 @@ class EditWorkshop(UserIsWorkshopAdminMixin, generic.edit.UpdateView):
     success_url = ""
     # permission_required = 'workshop.change_workshop'
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['workshop_formset'] = WorkshopFormSetFormSet(self.request.POST)
+        else:
+            data['workshop_formset'] = WorkshopFormSet()
+        return data
+
     def form_valid(self, form):
-        form.save()
-        return HttpResponseRedirect(reverse('workshop:list'))
+        context = self.get_context_data()
+        workshop_formset = context['workshop_formset']
+        if workshop_formset.is_valid():
+            self.object = form.save()
+            timeslots = workshop_formset.save(commit=False)
+            for timeslot in timeslots:
+                timeslot.workshop = self.object
+                timeslot.save()
+            return HttpResponseRedirect(reverse('workshop:list'))
+        else:
+            return self.form_invalid(form)
     
     def get_queryset(self):
         return Workshop.objects.all()

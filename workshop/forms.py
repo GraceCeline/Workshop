@@ -3,7 +3,7 @@ from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth.decorators import login_required, permission_required
-from .models import Workshop, Tool
+from .models import Workshop, Tool, Timeslot
 from django.forms.widgets import DateInput, TimeInput
 
 class RegistrationForm(UserCreationForm):
@@ -25,6 +25,11 @@ class DateInput(forms.DateInput):
 class TimeInput(forms.TimeInput):
     input_type = 'time'
 
+class TimeslotForm(forms.ModelForm):
+    class Meta:
+        model = Timeslot
+        fields = ['topic', 'start_time', 'end_time']
+
 class WorkshopForm(forms.ModelForm): 
     tool = forms.ModelMultipleChoiceField(
         queryset=Tool.objects.all(),
@@ -39,6 +44,9 @@ class WorkshopForm(forms.ModelForm):
             'end_time' : TimeInput(format='%H:%M'),
             'registration_deadline' : DateInput(),
         }
+
+WorkshopFormSet = inlineformset_factory(Workshop, Timeslot, form=WorkshopForm, extra=3)
+
 class ToolForm(forms.ModelForm):
     class Meta:
         model = Tool
