@@ -37,13 +37,17 @@
                 </div>
             {% endif %}
 
-            {% if forloop.counter|divisibleby:3 and not forloop.last %}
-                </div><div class="row justify-content-start">
-            {% endif %}
+        {% if forloop.counter|divisibleby:3 and not forloop.last %}
+        </div><div class="row justify-content-space-around">
+        {% endif %}
+
         {% endfor %}
+        </div>
     </div>
+
     <h3>Past Workshop</h3>
-    <div class="row ">
+    <div class="workshops">
+        <div class="row justify-content-start">
         {% for workshop in workshop_list %}
             {% if workshop.past_workshop %}
                 <div class="col-md-4">
@@ -59,11 +63,10 @@
             {% endif %}
 
             {% if forloop.counter|divisibleby:3 and not forloop.last %}
-                </div><div class="row justify-content-start">
+            </div><div class="row justify-content-start">
             {% endif %}
         {% endfor %}
-         </div>
-        
+        </div> 
     </div>
 </body>
 </html>

@@ -50,5 +50,5 @@ class WorkshopForm(forms.ModelForm):
             'registration_deadline' : DateInput(),
         }
 
-WorkshopFormSet = inlineformset_factory(Workshop, Timeslot, form=WorkshopForm, extra=3)
+WorkshopFormSet = inlineformset_factory(Workshop, Timeslot, form=WorkshopForm, extra=3, can_delete=False)
 

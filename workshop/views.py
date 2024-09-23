@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.views import generic
 from .models import Tool, Workshop, Timeslot
-from .forms import  ToolForm,WorkshopForm, RegistrationForm, TimeslotForm, WorkshopFormSet
+from .forms import  ToolForm, WorkshopForm, RegistrationForm, TimeslotForm, WorkshopFormSet
 import logging
 
 class UserIsWorkshopAdminMixin:
@@ -99,7 +99,7 @@ class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            data['workshop_formset'] = WorkshopFormSetFormSet(self.request.POST)
+            data['workshop_formset'] = WorkshopFormSet(self.request.POST)
         else:
             data['workshop_formset'] = WorkshopFormSet()
         return data
@@ -130,7 +130,7 @@ class EditWorkshop(UserIsWorkshopAdminMixin, generic.edit.UpdateView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         if self.request.POST:
-            data['workshop_formset'] = WorkshopFormSetFormSet(self.request.POST)
+            data['workshop_formset'] = WorkshopFormSet(self.request.POST)
         else:
             data['workshop_formset'] = WorkshopFormSet()
         return data
@@ -163,9 +163,10 @@ class DeleteWorkshop(UserIsWorkshopAdminMixin, generic.edit.DeleteView):
     def delete():
         return super(DeleteWorkshop, self).delete()
     
-class CreateTool(UserIsWorkshopAdminMixin, generic.edit.CreateView):
+class CreateTool(generic.edit.CreateView):
     form_class = ToolForm
     template_name ="workshop/create_tool.html"
 
-    def form_valid(self):
+    def form_valid(self,form):
+        form.save()
         return HttpResponseRedirect(reverse('workshop:list'))
