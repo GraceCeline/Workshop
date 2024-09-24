@@ -1,7 +1,7 @@
 {% load static %}
 {% load bootstrap %}
-<link href="{% static 'myworkshop/bootstrap.min.css' %}" rel="stylesheet">
-<link href="{% static 'myworkshop/style.css' %}" rel="stylesheet">
+<link href="{% static 'src/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'src/style.css' %}" rel="stylesheet">
 <body>
   <form method="post">
     {% csrf_token %}{{ form|bootstrap }}

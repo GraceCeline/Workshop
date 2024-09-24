@@ -1,5 +1,5 @@
 """
-URL configuration for myworkshop project.
+URL configuration for src project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from workshop import views
+from src.workshop import views
 
 urlpatterns = [
     # path('', include('django.contrib.auth.urls')),
@@ -26,5 +26,5 @@ urlpatterns = [
     path('logout', views.MyLogoutView.as_view(), name="logout"),
     path('logout_redirect',views.LogoutRedirectView.as_view(), name="logout_redirect"),
     path('admin/', admin.site.urls),
-    path('workshop/', include("workshop.urls"))
+    path('workshop/', include("src.workshop.urls"))
 ]
