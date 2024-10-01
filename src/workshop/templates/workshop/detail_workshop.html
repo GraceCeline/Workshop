@@ -1,0 +1,40 @@
+{% load static %}
+{% load bootstrap %}
+<link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'workshop/style.css' %}">
+
+<html lang="en">
+<body>
+    <title>Workshop {{ workshop.workshop_title }} Detail</title>
+    <div class="text-center mb-5" style="padding-top: 50px; padding-bottom: 20px;">
+            
+            <h1>{{ workshop.workshop_title }}</h1>
+            <h3>{{ workshop.description }}</h3>
+            <p>Date: {{ workshop.date }}</p>
+            <p>Start Time: {{ workshop.start_time }}</p>
+            <p>End Time: {{ workshop.end_time }}</p>
+            <h2>Tools</h2>
+            <ul>
+                {% for tool in workshop.tool.all %}
+                    <li>{{ tool.tool }}</li>
+                {% endfor %}
+            </ul>
+            <p>{{ workshop.prerequisite }}</p>
+            <p>Location: {{ workshop.location }}</p>
+            <p>Host: {{ workshop.workshop_admin }}</p>
+            <p>Type of Presence: {{ workshop.get_type_of_presence_display }}</p>
+            <p>Max Participants: {{ workshop.max_participants }}</p>
+            <p>Further Info: <a href="{{ workshop.further_info_link }}">{{ workshop.further_info_link }}</a></p>
+            {% if workshop.deadline_overdue %}
+                <p>The registration deadline has passed.</p>
+            {% else %}
+                <p>Registration Deadline: {{ workshop.registration_deadline }}</p>
+            {% endif %}
+            {% if user.is_authenticated %}
+              <p>Registration Link: <a href="{{ workshop.registration_link }}">{{ workshop.registration_link }}</a></p>
+            {% else %}
+              <p>Please login to register to the workshop</p>
+            {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% load static %}
+{% load bootstrap %}
+<link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'workshop/style.css' %}">
+<html lang="en">
+<body>
+<legend class="py-3">Create your Workshop</legend>
+<a href="{% url 'workshop:create_tool' %}" class="btn btn-warning" role="button">Need a new tool? Create Tool</a>
+    <div class="form-group col-sm-8">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|bootstrap }}
+            {{ workshop_formset.management_form }}
+            {% for form in workshop_formset %}
+                {{ form.as_p }}
+            {% endfor %}
+        <button type="submit" class="btn btn-primary mx-4">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
+
