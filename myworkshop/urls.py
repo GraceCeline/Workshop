@@ -21,6 +21,7 @@ from workshop import views
 urlpatterns = [
     # path('', include('django.contrib.auth.urls')),
     path('',views.MyLoginView.as_view(),name="login"),
+    path('api-auth/', include('rest_framework.urls')), # Rest Framework
     path('login_redirect', views.LoginRedirectView.as_view(), name='login_redirect'),
     path('sign-up', views.sign_up, name="sign-up" ),
     path('logout', views.MyLogoutView.as_view(), name="logout"),

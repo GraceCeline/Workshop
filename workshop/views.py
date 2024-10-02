@@ -1,3 +1,5 @@
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView, DestroyAPIView
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
@@ -13,6 +15,7 @@ from django.template import loader
 from django.views import generic
 from .models import Tool, Workshop, Timeslot
 from .forms import  ToolForm, WorkshopForm, RegistrationForm, TimeslotForm, WorkshopFormSet
+from .serializers import WorkshopSerializer
 import logging
 
 class UserIsWorkshopAdminMixin:
@@ -22,7 +25,7 @@ class UserIsWorkshopAdminMixin:
         if request.user.is_staff:
             return super().dispatch(request, *args, **kwargs)
 
-        if workshop.workshop_admin != request.user:
+        if workshop.tutor != request.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
@@ -63,6 +66,8 @@ def sign_up(request):
     return render(request, 'registration/sign_up.html', {"form": form})
 
 class ListWorkshop(generic.ListView):
+    serializer_class = WorkshopSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     template_name = "workshop/homepage.html"
     context_object_name = "workshop_list"
 
@@ -83,6 +88,7 @@ class ListWorkshop(generic.ListView):
 
 class DetailWorkshop(generic.detail.DetailView):
     model = Workshop
+    serializer_class = WorkshopSerializer
     template_name = "workshop/detail_workshop.html"
 
     def get_context_data(self, **kwargs):
@@ -93,6 +99,7 @@ class DetailWorkshop(generic.detail.DetailView):
 
 class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
     form_class = WorkshopForm
+    serializer_class = WorkshopSerializer
     template_name = "workshop/create_workshop.html"
     permission_required = 'workshop.add_workshop'
 
@@ -123,6 +130,7 @@ class CreateWorkshop(PermissionRequiredMixin, generic.edit.CreateView):
 
 class EditWorkshop(UserIsWorkshopAdminMixin, generic.edit.UpdateView):
     form_class = WorkshopForm
+    serializer_class = WorkshopSerializer
     template_name = "workshop/edit_workshop.html"
     success_url = ""
     # permission_required = 'workshop.change_workshop'
@@ -153,6 +161,7 @@ class EditWorkshop(UserIsWorkshopAdminMixin, generic.edit.UpdateView):
 
 class DeleteWorkshop(UserIsWorkshopAdminMixin, generic.edit.DeleteView):
     model = Workshop
+    serializer_class = WorkshopSerializer
     template_name = 'workshop/delete_workshop.html'
     success_url= "/workshop/"
     # permission_required = 'workshop.delete_workshop'
