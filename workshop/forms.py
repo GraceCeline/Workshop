@@ -42,7 +42,7 @@ class WorkshopForm(forms.ModelForm):
     )
     class Meta:
         model = Workshop
-        exclude = ('workshop_admin',)
+        exclude = ('tutor',)
         widgets = {
             'date': DateInput(format='%d/%m/%Y'),
             'start_time' : TimeInput(format='%H:%M'),
