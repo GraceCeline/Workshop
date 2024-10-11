@@ -80,6 +80,11 @@ Then run `tox` again.
 The initialization of the tox-environment only needs to be done **once**.
 All further changes can be done within the environment, changes to the `requirements.txt` can be reflected to your environment by running `pip install -r requirements.txt` within the activated enviroment.
 
+## Development workflows
 
+Make sure to check the information given in the [guidelines-repository](https://github.com/deNBI/guidelines). 
+
+
+All relevant information on project-management, branch-naming and other working conventions are given there. 
 
 
