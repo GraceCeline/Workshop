@@ -1,0 +1,11 @@
+{% load static %}
+{% load bootstrap %}
+<link href="{% static 'src/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'src/style.css' %}" rel="stylesheet">
+<body>
+  <form method="post">
+    {% csrf_token %}{{ form|bootstrap }}
+    <p>Don't have an account? Create one <a href="/sign-up">Here</a>!</p>
+    <button type="submit" class="btn btn-success">Login</button>
+  </form>
+</body>

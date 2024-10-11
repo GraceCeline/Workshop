@@ -1,0 +1,72 @@
+{% load static %}
+
+<link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'workshop/style.css' %}">
+
+<html lang="en">
+<body>
+    <div class="text-center mb-4 my-4">
+        <h1>Welcome to our page!</h1>
+        <p>All workshops available are listed below</p>
+        <p><a href="{% url 'admin:index' %}" style="text-decoration: none;">Are you an admin? Go to the admin site!</a></p>
+        <p><a href="{% url 'workshop:create_workshop' %}" class="btn btn-secondary" role="button" >Create your own workshop here!</a></p> 
+        <p><a href="{% url 'logout' %}" class="btn btn-secondary" role="button">Log out</a></p>
+    </div>
+
+    <div class="justify-content-center d-flex mb-2">
+        <form action="" method="GET" class="d-flex">  
+            <input type="search" name="search" class="form-control rounded me-0" aria-label="Search" aria-describedby="search-addon"  placeholder="Search.." size="40">
+            <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Search<i class="fas fa-search"></i></button>
+        </form>
+    </div>
+    
+
+    <div class="workshops">
+        <div class="row justify-content-space-around">
+        {% for workshop in workshop_list %}
+            {% if not workshop.past_workshop %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></h5>
+                            <p class="card-text">{{ workshop.description }}</p>
+                            <a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a>
+                            <a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% if forloop.counter|divisibleby:3 and not forloop.last %}
+        </div><div class="row justify-content-space-around">
+        {% endif %}
+
+        {% endfor %}
+        </div>
+    </div>
+
+    <h3>Past Workshop</h3>
+    <div class="workshops">
+        <div class="row justify-content-start">
+        {% for workshop in workshop_list %}
+            {% if workshop.past_workshop %}
+                <div class="col-md-4">
+                    <div class="card bg-secondary-subtle mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title"><a href="{% url 'workshop:details' workshop.id %}">{{ workshop.workshop_title }}</a></h5>
+                            <p class="card-text">{{ workshop.description }}</p>
+                            <a href="{% url 'workshop:edit_workshop' workshop.id %}" class="btn btn-warning" role="button">Edit</a>
+                            <a href="{% url 'workshop:delete_workshop' workshop.id %}" class="btn btn-danger" role="button">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if forloop.counter|divisibleby:3 and not forloop.last %}
+            </div><div class="row justify-content-start">
+            {% endif %}
+        {% endfor %}
+        </div> 
+    </div>
+</body>
+</html>

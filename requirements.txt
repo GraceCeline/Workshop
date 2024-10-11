@@ -1,0 +1,7 @@
+Django==5.0.7
+django-bootstrap-form
+setuptools
+djangorestframework
+django-filter 
+markdown
+django_bootstrap5
