@@ -1,4 +1,4 @@
-Workshop
+# Workshop
 
 Workshop is a website created to show all workshops from SimpleVM Team. It is developed with django.
 
