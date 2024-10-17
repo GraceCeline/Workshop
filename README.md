@@ -10,17 +10,18 @@ git clone -b https://github.com/GraceCeline/Workshop.git
 ~~~
 then go to terminal and go to the directory where the repository is cloned. Run the application using
 ~~~BASH
-python manage.py runserver
+make dev
+~~~
+This will launch the application locally in localhost:8000. By running make dev it will run the application in a tox environment, so make sure tox is installed. 
+Command to install tox in Unix:
+~~~BASH
+pip install tox
 ~~~
 ### Makefile
 There are several make commands available, including:
 ~~~BASH
 make help
 ~~~
-~~~BASH
-make dev
-~~~
-to run the application in a virtual environment and launch it locally in localhost:8000
 ~~~BASH
 make makemigrations
 ~~~
