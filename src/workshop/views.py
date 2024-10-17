@@ -3,6 +3,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAP
 from rest_framework.views import APIView
 from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.contrib.auth.views import LoginView, LogoutView
@@ -225,6 +226,11 @@ class ToolViewSet(viewsets.ModelViewSet):
     queryset = Tool.objects.all()
     serializer_class = ToolSerializer
 
+    def has_permission(self, request):
+        is_staff = request.user.is_staff
+        is_workshop_admin = request.user.groups.filter(name='Workshop Administrator').exists()
+        return is_staff or in_workshop_admin_group
+
     @action(detail=False, methods=['get'], serializer_class=ToolSerializer,)
     def get(self, request, pk=None):
         query_params = request.query_params
@@ -250,6 +256,10 @@ class ToolViewSet(viewsets.ModelViewSet):
     
     def post(self, request):
         # Create a new tool
+
+        if not self.has_permission(request):
+            return Response({"error": "You do not have permission."})
+
         serializer = ToolSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -258,6 +268,10 @@ class ToolViewSet(viewsets.ModelViewSet):
 
     def put(self, request, pk):
         # Update an existing tool
+
+        if not self.has_permission(request):
+            return Response({"error": "You do not have permission."})
+
         tool = get_object_or_404(Tool, pk=pk)
         serializer = ToolSerializer(tool, data=request.data, partial=True)  # Enables updating model partially
         if serializer.is_valid():
@@ -267,6 +281,10 @@ class ToolViewSet(viewsets.ModelViewSet):
 
     def delete(self, request, pk):
         # Delete a tool
+
+        if not self.has_permission(request):
+            return Response({"error": "You do not have permission."})
+
         tool = get_object_or_404(Tool, pk=pk)
         tool.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
