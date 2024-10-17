@@ -12,7 +12,7 @@ then go to terminal and go to the directory where the repository is cloned. Run 
 ~~~BASH
 python manage.py runserver
 ~~~
-###Makefile
+### Makefile
 There are several make commands available, including:
 ~~~BASH
 make help
