@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from src.workshop import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     # path('', include('django.contrib.auth.urls')),
     path('',views.MyLoginView.as_view(),name="login"),
     path('api-auth/', include('rest_framework.urls')), # Rest Framework
+    path('api-token-auth/', obtain_auth_token),
     path('login_redirect', views.LoginRedirectView.as_view(), name='login_redirect'),
     path('sign-up', views.sign_up, name="sign-up" ),
     path('logout', views.MyLogoutView.as_view(), name="logout"),

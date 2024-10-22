@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "bootstrapform",
     'rest_framework',
+    'rest_framework.authtoken',
     'django_bootstrap5',
     'django.contrib.admin',
     'django.contrib.auth',

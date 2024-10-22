@@ -2,6 +2,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from django.forms import inlineformset_factory
 
 class Tool(models.Model):
@@ -45,5 +46,9 @@ class Timeslot(models.Model):
     topic = models.CharField(max_length=300)
     start_time = models.TimeField()
     end_time = models.TimeField()
-   
+
+def ready(self):
+    for user in User.objects.all():
+        Token.objects.get_or_create(user=user)
+
 # Create your models here.
