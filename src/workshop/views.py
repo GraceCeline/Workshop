@@ -3,10 +3,10 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAP
 from rest_framework.views import APIView
 from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
@@ -74,9 +74,10 @@ def sign_up(request):
 
 class ListWorkshop(ListAPIView):
     serializer_class = WorkshopSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly]
     template_name = "workshop/homepage.html"
     context_object_name = "workshop_list"
+    authentication_classes = [BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated] 
     filter_backends = [filters.SearchFilter]
     search_fields = ['workshop_title', 'tutor']
 
@@ -226,6 +227,8 @@ class DeleteWorkshop(UserIsWorkshopAdminMixin, DestroyAPIView):
 class ToolViewSet(viewsets.ModelViewSet):
     queryset = Tool.objects.all()
     serializer_class = ToolSerializer
+    authentication_classes = [BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def has_permission(self, request):
         is_staff = request.user.is_staff
@@ -239,10 +242,8 @@ class ToolViewSet(viewsets.ModelViewSet):
         if not query_params:
             return Response({"error": "No filtering parameters provided"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Build a dynamic Q object based on query parameters
         filters = Q()
         for field, value in query_params.items():
-            # Example: ?name=drill or ?description=heavy duty
             filters |= Q(**{f"{field}__icontains": value})
 
         # Filter the tools based on the query parameters
@@ -290,80 +291,3 @@ class ToolViewSet(viewsets.ModelViewSet):
         tool.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-
-# API VIew Version #
-"""
-class ToolAPIView(APIView):
-    queryset = Tool.objects.all()
-    serializer_class = ToolSerializer
-
-    def get(self, request, pk=None):
-        # Retrieve a single tool if pk is provided, otherwise return all tools
-        if pk:
-            tool = get_object_or_404(Tool, pk=pk)
-            serializer = ToolSerializer(tool)
-            return Response(serializer.data)
-        # Optional filter by name
-        name = request.query_params.get('name')
-        if name:
-            tools = Tool.objects.filter(name__icontains=name)
-        else:
-            tools = Tool.objects.all()
-        
-        serializer = ToolSerializer(tools, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        # Create a new tool
-        serializer = ToolSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
-
-    def put(self, request, pk):
-        # Update an existing tool
-        tool = get_object_or_404(Tool, pk=pk)
-        serializer = ToolSerializer(tool, data=request.data, partial=True)  # Use partial=True for PATCH-like behavior
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        # Delete a tool
-        tool = get_object_or_404(Tool, pk=pk)
-        tool.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    # Custom filter endpoint for searching tools by name
-    def filter(self, request):
-        name = request.query_params.get('name')
-        if name:
-            tools = Tool.objects.filter(name__icontains=name)
-            serializer = ToolSerializer(tools, many=True)
-            return Response(serializer.data)
-        return Response({"error": "Name parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
-"""
-
-"""
-        Tools --> /tools
-        GET / --> alle tools, /?id=5 --> tool id 5 , tools/5/
-        POST --> creation
-        PUT/PATCH
-        DELETE --> entferne tools
-
-        tools/filter/?name=xyz --> GET 
-        eigener endpunkt mit eingener methode 
-        z.b decorator action
-
-    @action(
-        detail=True,
-        url_path="ports",
-        methods=["get"],
-        permission_classes=[IsObjOwner | IsObProjectAdmin | IsAdminUser],
-        serializer_class=VmSecurityGroupRuleSerializer,
-    )
-    def ports(self, ...
-"""
