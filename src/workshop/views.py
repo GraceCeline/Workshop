@@ -5,7 +5,7 @@ from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
@@ -77,7 +77,7 @@ class ListWorkshop(ListAPIView):
     template_name = "workshop/homepage.html"
     context_object_name = "workshop_list"
     authentication_classes = [BasicAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [AllowAny] 
     filter_backends = [filters.SearchFilter]
     search_fields = ['workshop_title', 'tutor']
 
@@ -95,21 +95,13 @@ class ListWorkshop(ListAPIView):
             queryset = queryset.filter(is_private=False)
 
         return queryset
-    
-    """def render_to_response(self, context, **response_kwargs):
-        # If the request is for JSON, return a JsonResponse
-        if self.request.headers.get('Accept') == 'application/json':
-            queryset = self.get_queryset()
-            serializer = WorkshopSerializer(queryset, many=True)
-            return JsonResponse(serializer.data, safe=False)
-        else:
-            # Otherwise, return the regular HTML response
-            return super().render_to_response(context, **response_kwargs)
-"""
+
 
 class DetailWorkshop(APIView):
     model = Workshop
     serializer_class = WorkshopSerializer
+    authentication_classes = [BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     template_name = "workshop/detail_workshop.html"
 
     def get_queryset(self):
@@ -147,6 +139,8 @@ class DetailWorkshop(APIView):
 class CreateWorkshop(PermissionRequiredMixin, CreateAPIView):
     form_class = WorkshopForm
     serializer_class = WorkshopSerializer
+    authentication_classes = [BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     template_name = "workshop/create_workshop.html"
     permission_required = 'workshop.add_workshop'
     queryset = Workshop.objects.all()
@@ -179,6 +173,8 @@ class CreateWorkshop(PermissionRequiredMixin, CreateAPIView):
 class EditWorkshop(UserIsWorkshopAdminMixin, RetrieveUpdateAPIView):
     form_class = WorkshopForm
     serializer_class = WorkshopSerializer
+    authentication_classes = [BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     template_name = "workshop/edit_workshop.html"
     success_url = ""
     queryset = Workshop.objects.all()
