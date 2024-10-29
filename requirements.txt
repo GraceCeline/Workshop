@@ -6,3 +6,4 @@ djangorestframework
 django-filter 
 markdown
 django_bootstrap5
+django-cors-headers
