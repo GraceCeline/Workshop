@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-@isf)6=jq2m4)=dz=xmt-m3rbo=1#c)qyeq(-@1m!9w%r+&)%u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 LOG_DIR = os.path.join(BASE_DIR, "log")
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ 'simplevm.bi.denbi.de','localhost', '127.0.0.1']
 
 
 # Application definition
@@ -33,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "bootstrapform",
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'rest_framework.authtoken',
     'django_bootstrap5',
@@ -47,14 +49,23 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,
+    'NON_FIELD_ERRORS_KEY': 'global',
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
 }
 
-
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+}
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
@@ -64,9 +75,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -78,8 +89,10 @@ CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'src.settings.urls'
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3030',
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'X-CSRFToken',  # Add custom headers here if needed
 ]
 
 TEMPLATES = [

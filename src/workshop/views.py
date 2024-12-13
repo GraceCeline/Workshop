@@ -10,6 +10,7 @@ from rest_framework.authentication import BasicAuthentication, TokenAuthenticati
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
+from django.middleware.csrf import get_token
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
@@ -17,13 +18,14 @@ from django.forms import inlineformset_factory
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render, redirect,reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template import loader
 from django.views import generic
 from .models import Tool, Workshop, Timeslot
 from .forms import  ToolForm, WorkshopForm, RegistrationForm, TimeslotForm, WorkshopFormSet
 from .serializers import WorkshopSerializer, ToolSerializer
 import logging
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 class UserIsWorkshopAdminMixin:
     def dispatch(self, request, *args, **kwargs):
@@ -35,6 +37,12 @@ class UserIsWorkshopAdminMixin:
         if workshop.tutor != request.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+
+class CsrfTokenView(APIView):
+    def get(self, request, *args, **kwargs):
+        csrf_token = get_token(request)  # Retrieve CSRF token
+        return JsonResponse({'csrfToken': csrf_token})  # Return token as JSON
+
 
 class MyLoginView(LoginView):
     redirect_authenticated_user = False
@@ -91,8 +99,8 @@ class ListWorkshop(ListAPIView):
                 Q(description__icontains=query) |
                 Q(location__icontains=query)).order_by("workshop_title")
 
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(is_private=False)
+        # if not self.request.user.is_authenticated:
+        #     queryset = queryset.filter(is_private=False)
 
         return queryset
 
@@ -101,7 +109,7 @@ class DetailWorkshop(APIView):
     model = Workshop
     serializer_class = WorkshopSerializer
     authentication_classes = [BasicAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     template_name = "workshop/detail_workshop.html"
 
     def get_queryset(self):
@@ -114,8 +122,8 @@ class DetailWorkshop(APIView):
                 Q(description__icontains=query) |
                 Q(location__icontains=query)).order_by("workshop_title")
 
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(is_private=False)
+        # if not self.request.user.is_authenticated:
+        #     queryset = queryset.filter(is_private=False)
 
         return queryset
     
@@ -136,14 +144,18 @@ class DetailWorkshop(APIView):
         return context
 """
 
-class CreateWorkshop(PermissionRequiredMixin, CreateAPIView):
+class CreateWorkshop(CreateAPIView):
     form_class = WorkshopForm
     serializer_class = WorkshopSerializer
     authentication_classes = [BasicAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     template_name = "workshop/create_workshop.html"
     permission_required = 'workshop.add_workshop'
     queryset = Workshop.objects.all()
+
+    def get_success_url(self):
+        # Return the URL to redirect after successful creation
+        return redirect('workshop:list') 
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -165,16 +177,19 @@ class CreateWorkshop(PermissionRequiredMixin, CreateAPIView):
             for timeslot in timeslots:
                 timeslot.workshop = self.object
                 timeslot.save()
-            return HttpResponseRedirect(reverse('workshop:list'))
+            
+            return HttpResponse(response_data, status=status.HTTP_200_OK)
         else:
-            return self.form_invalid(form)
+            print(serializer.errors)  # or use logging for production
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         # return HttpResponseRedirect(reverse('workshop:list'))
 
-class EditWorkshop(UserIsWorkshopAdminMixin, RetrieveUpdateAPIView):
+class EditWorkshop( RetrieveUpdateAPIView):
     form_class = WorkshopForm
     serializer_class = WorkshopSerializer
     authentication_classes = [BasicAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     template_name = "workshop/edit_workshop.html"
     success_url = ""
     queryset = Workshop.objects.all()
@@ -197,14 +212,14 @@ class EditWorkshop(UserIsWorkshopAdminMixin, RetrieveUpdateAPIView):
             for timeslot in timeslots:
                 timeslot.workshop = self.object
                 timeslot.save()
-            return HttpResponseRedirect(reverse('workshop:list'))
+            return HttpResponseRedirect(reverse('workshop:list'), status=status.HTTP_200_OK)
         else:
             return self.form_invalid(form)
     
     def get_queryset(self):
         return Workshop.objects.all()
 
-class DeleteWorkshop(UserIsWorkshopAdminMixin, DestroyAPIView):
+class DeleteWorkshop(DestroyAPIView):
     model = Workshop
     serializer_class = WorkshopSerializer
     template_name = 'workshop/delete_workshop.html'
@@ -215,8 +230,9 @@ class DeleteWorkshop(UserIsWorkshopAdminMixin, DestroyAPIView):
     def get_queryset(self):
         return Workshop.objects.all()
     
-    def delete():
-        return super(DeleteWorkshop, self).delete()
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
     # naming should be more class-specific, not method specific
 
@@ -224,7 +240,7 @@ class ToolViewSet(viewsets.ModelViewSet):
     queryset = Tool.objects.all()
     serializer_class = ToolSerializer
     authentication_classes = [BasicAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def has_permission(self, request):
         is_staff = request.user.is_staff
