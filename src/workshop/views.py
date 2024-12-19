@@ -5,6 +5,7 @@ from rest_framework import filters, viewsets, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django.contrib.auth.views import LoginView, LogoutView
@@ -114,6 +115,16 @@ def sign_up(request):
 
     return render(request, 'registration/sign_up.html', {"form": form})
  """   
+@api_view(['GET'])
+def dummy_error_endpoint(request):
+    """
+    A dummy endpoint that always returns an HTTP 400 error.
+    """
+    return Response(
+        {"error": "This is a dummy error response."},
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
 class RegisterAPIView (APIView):
     def post(self, request, *args, **kwargs):
         form = RegistrationForm(request.data)

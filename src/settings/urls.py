@@ -29,6 +29,7 @@ urlpatterns = [
     path('register', views.RegisterAPIView.as_view(), name="register" ),
     path('logout', views.LogoutAPIView.as_view(), name="logout"),
     path('admin/', admin.site.urls),
+    path('dummy-error/', views.dummy_error_endpoint, name='dummy-error'),
     path('csrf/', views.CsrfTokenView.as_view(), name='csrf_token'),
     path('workshop/', include("src.workshop.urls"))
 ]
