@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.authentication import BasicAuthentication, TokenAuthentication
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.middleware.csrf import get_token
 from django.contrib import messages
@@ -43,7 +43,7 @@ class CsrfTokenView(APIView):
         csrf_token = get_token(request)  # Retrieve CSRF token
         return JsonResponse({'csrfToken': csrf_token})  # Return token as JSON
 
-
+"""
 class MyLoginView(LoginView):
     redirect_authenticated_user = False
 
@@ -53,21 +53,55 @@ class MyLoginView(LoginView):
     def form_invalid(self, form):
         messages.error(self.request,'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
+"""
+class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
 
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        # Authenticate user
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                "message": "Login successful.",
+                "token": token.key,
+                "username": user.username
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Invalid username or password."}, status=status.HTTP_400_BAD_REQUEST)
+
+"""
 class LoginRedirectView(generic.TemplateView):
     template_name = 'registration/login_redirect.html'
 
 class LogoutRedirectView(generic.TemplateView):
     template_name = 'registration/logout.html'
+"""
 
-class MyLogoutView(LogoutView):
-    next_page = reverse_lazy('logout_redirect')
-    """make logout available via GET"""
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "options"]
+
+    def options(self, request, *args, **kwargs):
+        response = Response()
+        response['Access-Control-Allow-Origin'] = 'http://localhost:4200'
+        response['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
+        return response
+
+    def post(self, request, *args, **kwargs):
+        request.auth.delete()  # Delete the token to log out the user
+        logout(request)
+        return Response({"message": "Logged out successfully"}, status=200)
+
 
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
-
+"""
 def sign_up(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -79,6 +113,19 @@ def sign_up(request):
         form = RegistrationForm()
 
     return render(request, 'registration/sign_up.html', {"form": form})
+ """   
+class RegisterAPIView (APIView):
+    def post(self, request, *args, **kwargs):
+        form = RegistrationForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                "message": "User registered successfully.",
+                "token": token.key
+            }, status = status.HTTP_201_CREATED)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListWorkshop(ListAPIView):
     serializer_class = WorkshopSerializer
@@ -99,8 +146,8 @@ class ListWorkshop(ListAPIView):
                 Q(description__icontains=query) |
                 Q(location__icontains=query)).order_by("workshop_title")
 
-        # if not self.request.user.is_authenticated:
-        #     queryset = queryset.filter(is_private=False)
+        if not self.request.user.is_authenticated:
+            queryset = queryset.filter(is_private=False)
 
         return queryset
 

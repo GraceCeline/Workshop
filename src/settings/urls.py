@@ -23,13 +23,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     # path('', include('django.contrib.auth.urls')),
-    path('', views.MyLoginView.as_view() ,name="login"),
+    path('', views.LoginAPIView.as_view() ,name="login"),
    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('login_redirect', views.LoginRedirectView.as_view(), name='login_redirect'),
-    path('sign-up', views.sign_up, name="sign-up" ),
-    path('logout', views.MyLogoutView.as_view(), name="logout"),
-    path('logout_redirect',views.LogoutRedirectView.as_view(), name="logout_redirect"),
+    path('register', views.RegisterAPIView.as_view(), name="register" ),
+    path('logout', views.LogoutAPIView.as_view(), name="logout"),
     path('admin/', admin.site.urls),
     path('csrf/', views.CsrfTokenView.as_view(), name='csrf_token'),
     path('workshop/', include("src.workshop.urls"))
