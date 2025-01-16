@@ -1,9 +1,8 @@
 Django==5.0.7
-environs
-django-bootstrap-form
-setuptools
-djangorestframework
-django-filter 
-markdown
-django_bootstrap5
-django-cors-headers
+django-bootstrap-form==3.4
+django-bootstrap5==24.2
+django-cors-headers==4.5.0
+django-crispy-forms==2.3
+django-filter==24.2
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1

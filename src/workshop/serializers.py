@@ -6,6 +6,9 @@ class WorkshopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workshop
         exclude = ('tutor',)
+        tool = serializers.PrimaryKeyRelatedField(
+        queryset=Tool.objects.all(), many=True
+    )
 
     def create(self, validated_data):
         """

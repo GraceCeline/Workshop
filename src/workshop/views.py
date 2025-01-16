@@ -26,6 +26,7 @@ from .models import Tool, Workshop, Timeslot
 from .forms import  ToolForm, WorkshopForm, RegistrationForm, TimeslotForm, WorkshopFormSet
 from .serializers import WorkshopSerializer, ToolSerializer
 import logging
+import random
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 class UserIsWorkshopAdminMixin:
@@ -115,15 +116,23 @@ def sign_up(request):
 
     return render(request, 'registration/sign_up.html', {"form": form})
  """   
-@api_view(['GET'])
-def dummy_error_endpoint(request):
-    """
-    A dummy endpoint that always returns an HTTP 400 error.
-    """
-    return Response(
-        {"error": "This is a dummy error response."},
-        status=status.HTTP_400_BAD_REQUEST
-    )
+class RandomHTTPView(APIView):
+    def get(self, request, *args, **kwargs):
+        # List of HTTP status codes to randomly choose from
+        http_codes = [
+            status.HTTP_204_NO_CONTENT,
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+        ]
+
+        # Select a random HTTP status code
+        random_code = random.choice(http_codes)
+
+        # Return the random status code in the response
+        return Response({"message": f"Random HTTP Code: {random_code}"}, status=random_code)
 
 class RegisterAPIView (APIView):
     def post(self, request, *args, **kwargs):
