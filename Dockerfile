@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10.16-slim
 
 # Create the app directory
 RUN mkdir /app
@@ -6,7 +6,8 @@ RUN mkdir /app
 # Set the working directory inside the container
 WORKDIR /app
 
-RUN apt-get update
+RUN apt-get update 
+RUN apt-get install python3-dev default-libmysqlclient-dev build-essential pkg-config -y
 
 # Copy the Django project  and install dependencies
 COPY requirements.txt  .
