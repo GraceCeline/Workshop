@@ -1,0 +1,6 @@
+{% load static %}
+{% load bootstrap %}
+<link href="{% static 'src/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'src/style.css' %}">
+<h3>You are logged in!</h3>
+<a href="{% url 'workshop:list' %}">Go to workshops</a>

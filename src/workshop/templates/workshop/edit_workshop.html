@@ -1,0 +1,19 @@
+{% load static %}
+{% load bootstrap %}
+<link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'workshop/style.css' %}">
+<html>
+    <body>
+        <div class="form-group col-sm-8">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form|bootstrap }}
+                {{ workshop_formset.management_form }}
+                {% for form in workshop_formset %}
+                    {{ form.as_p }}
+                {% endfor %}
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </body>
+</html>

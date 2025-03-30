@@ -1,0 +1,16 @@
+{% load static %}
+{% load bootstrap %}
+<link href="{% static 'workshop/bootstrap.min.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'workshop/style.css' %}">
+<html lang="en">
+<body>
+<legend class="py-3">Create a Tool</legend>
+    <div class="form-group col-sm-8">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|bootstrap }}
+        <button type="submit" class="btn btn-primary mx-4">Save Tool</button>
+        </form>
+    </div>
+</body>
+</html>
